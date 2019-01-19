@@ -1,37 +1,28 @@
-# A Docker container for OpenGrok 1.1!
+# A OpenGrok Docker container support multi repo!
 
 ## OpenGrok 1.1 from official source:
 
 Directly downloaded from official source:
-https://github.com/oracle/opengrok/releases/
+https://github.com/OpenGrok/docker
 
 You can learn more about OpenGrok at http://oracle.github.io/opengrok/
 
 The container is available from DockerHub at https://hub.docker.com/r/opengrok/docker/
 
-## Additional info about the container:
-
-* Tomcat 9
-* JRE 8 (Required for Opengrok 1.0+)
-* Configurable reindexing (default every 10 min)
-
-The indexer is set so that it does not log into files.
 
 ## How to run:
 
 The container exports ports 8080 for OpenGrok.
 
-    docker run -d -v <path/to/your/src>:/src -p 8080:8080 opengrok/docker:latest
+    docker run --name multirepo -d -v <path/to/your_opengrok_root>:/var/opengrok -p 8080:8080 xslu001/opengrok-multirepo:latest
 
 The volume mounted to `/src` should contain the projects you want to make searchable (in sub directories). You can use common revision control checkouts (git, svn, etc...) and OpenGrok will make history and blame information available.
 
-By default, the index will be rebuild every ten minutes. You can adjust this time (in Minutes) by passing the `REINDEX` environment variable:
-
-    docker run -d -e REINDEX=30 -v <path/to/your/src>:/src -p 8080:8080 opengrok/docker:latest
-
-Setting `REINDEX` to `0` will disable automatic indexing. You can manually trigger an reindex using docker exec:
-
-    docker exec <container> /scripts/index.sh
+## How to add a repo:
+* create dir in <path/to/your_opengrok_root>: mkdir -p <repo name>/{src,data,etc}
+* cp source code to <path/to/your_opengrok_root>/<repo name>/src
+* docker exec -it multirepo /multirepo/deployNewRepo.sh <repo name>
+* docker exec -it multirepo /multirepo/createIndex.sh <repo name>
 
 ## OpenGrok Web-Interface
 
